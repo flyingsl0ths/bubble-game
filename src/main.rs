@@ -42,8 +42,10 @@ fn setup(
         radius: ball.radius,
     }));
 
+    const CENTER_Y: f32 = WINDOW_SIZE.1 / 2.;
+
     let ball_pos: Vec3 =
-        Vec3::new(-bag_size + ball.radius, -bag_size * 3.25, 0.);
+        Vec3::new(-bag_size + ball.radius, -(CENTER_Y - ball.radius), 0.);
 
     let ball_id = commands
         .spawn(MaterialMesh2dBundle {
@@ -59,12 +61,30 @@ fn setup(
         material: materials.add(Color::srgb(0.5, 0.5, 0.5)),
         transform: Transform::from_translation(Vec3::new(
             -bag_size * 2.,
-            -bag_size * 3.09,
+            -(CENTER_Y - bag_size / 2.),
             0.,
         )),
         ..default()
     });
 
-
     commands.entity(ball_id).insert(ball);
+
+    const RECTICLE_SIZE: f32 = 10.0;
+    let triangle = Mesh2dHandle(meshes.add(Triangle2d::new(
+        Vec2::Y * RECTICLE_SIZE,
+        Vec2::new(-RECTICLE_SIZE, -RECTICLE_SIZE),
+        Vec2::new(RECTICLE_SIZE, -RECTICLE_SIZE),
+    )));
+
+    commands.spawn((
+        MaterialMesh2dBundle {
+            mesh: triangle,
+            material: materials.add(Color::srgb(1.0, 0.0, 0.0)),
+            transform: Transform::from_translation(
+                ball_pos + Vec3::new(0., RECTICLE_SIZE, 0.),
+            ),
+            ..default()
+        },
+        Recticle,
+    ));
 }
