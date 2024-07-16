@@ -6,6 +6,15 @@ use bevy::{
 
 mod player;
 
+#[derive(Component)]
+struct MainCamera;
+
+#[derive(Component)]
+struct Recticle;
+
+#[derive(Component, Resource, Default)]
+struct MousePosition(Vec2);
+
 const WINDOW_SIZE: (f32, f32) = (1280., 880.);
 
 fn main() {
@@ -23,7 +32,9 @@ fn main() {
             }),
             ..Default::default()
         }))
+        .init_resource::<MousePosition>()
         .add_systems(Startup, setup)
+        .add_systems(Update, (get_mouse_position, draw_reticle))
         .run();
 }
 
@@ -32,7 +43,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    commands.spawn(Camera2dBundle::default());
+    commands.spawn((Camera2dBundle::default(), MainCamera));
 
     let bag_size: f32 = 50. * 2.;
     let ball = player::new_ball(35.);
@@ -87,4 +98,31 @@ fn setup(
         },
         Recticle,
     ));
+}
+
+fn get_mouse_position(
+    mut coordinates: ResMut<MousePosition>,
+    q_window: Query<&Window, With<PrimaryWindow>>,
+    q_camera: Query<(&Camera, &GlobalTransform), With<MainCamera>>,
+) {
+    let (camera, camera_transform) = q_camera.single();
+
+    let Some(cursor) = q_window.single().cursor_position() else {
+        return;
+    };
+
+    if let Some(position) =
+        camera.viewport_to_world_2d(camera_transform, cursor)
+    {
+        coordinates.0 = position;
+    }
+}
+
+fn draw_reticle(
+    coordinates: ResMut<MousePosition>,
+    mut recticle: Query<&mut Transform, With<Recticle>>,
+) {
+    let coordinates = coordinates.0;
+    let mut recticle = recticle.single_mut();
+    recticle.translation = coordinates.extend(1.);
 }
