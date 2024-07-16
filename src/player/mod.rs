@@ -1,7 +1,7 @@
-use bevy::prelude::{
-    Color,
-};
+use bevy::prelude::{Color, Component};
+
 use rand::{self, Rng};
+
 #[derive(Component)]
 pub struct Ball {
     pub radius: f32,
