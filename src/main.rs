@@ -1,10 +1,12 @@
 use bevy::{
     prelude::*,
     sprite::{MaterialMesh2dBundle, Mesh2dHandle},
+    window::PrimaryWindow,
 };
 
 mod player;
 
+const WINDOW_SIZE: (f32, f32) = (1280., 880.);
 
 fn main() {
     App::new()
@@ -12,6 +14,11 @@ fn main() {
             primary_window: Some(Window {
                 title: "Bobbles".to_string(),
                 resizable: false,
+                resolution: WINDOW_SIZE.into(),
+                enabled_buttons: bevy::window::EnabledButtons {
+                    maximize: false,
+                    ..Default::default()
+                },
                 ..Default::default()
             }),
             ..Default::default()
