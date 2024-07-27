@@ -108,6 +108,16 @@ fn setup(
 
     const RECTICLE_SIZE: f32 = 10.0;
 
+    commands.spawn((
+        SpriteBundle {
+            texture: asset_server.load("player/reticle.png"),
+            transform: Transform::from_translation(
+                ball_pos + Vec3::new(0., RECTICLE_SIZE, 0.),
+            ),
+            ..default()
+        },
+        Recticle,
+    ));
 }
 
 fn get_mouse_position(
