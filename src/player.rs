@@ -6,6 +6,7 @@ use bevy::{
 
 use rand::{self, Rng};
 
+use crate::consts;
 use crate::MainCamera;
 
 pub struct PlayerSystems;
@@ -72,14 +73,14 @@ fn setup(
     asset_server: Res<AssetServer>,
 ) {
     let bag_size: f32 = 50. * 2.;
-    let ball = new_ball(35.);
+    let ball = new_ball(consts::BUBBLE_SIZE);
 
     let rect = Mesh2dHandle(meshes.add(Rectangle::new(bag_size, bag_size)));
     let circle = Mesh2dHandle(meshes.add(Circle {
         radius: ball.radius,
     }));
 
-    const CENTER_Y: f32 = crate::consts::WINDOW_SIZE.1 / 2.;
+    const CENTER_Y: f32 = consts::WINDOW_SIZE.1 / 2.;
 
     let ball_pos: Vec3 = Vec3::new(0., -(CENTER_Y - ball.radius), 0.);
 
