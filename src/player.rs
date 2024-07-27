@@ -81,8 +81,7 @@ fn setup(
 
     const CENTER_Y: f32 = crate::consts::WINDOW_SIZE.1 / 2.;
 
-    let ball_pos: Vec3 =
-        Vec3::new(-bag_size + ball.radius, -(CENTER_Y - ball.radius), 0.);
+    let ball_pos: Vec3 = Vec3::new(0., -(CENTER_Y - ball.radius), 0.);
 
     let ball_id = commands
         .spawn(MaterialMesh2dBundle {
@@ -97,7 +96,7 @@ fn setup(
         mesh: rect,
         material: materials.add(Color::srgb(0.5, 0.5, 0.5)),
         transform: Transform::from_translation(Vec3::new(
-            -bag_size * 2.,
+            -ball.radius * 3.25,
             -(CENTER_Y - bag_size / 2.),
             0.,
         )),
