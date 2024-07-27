@@ -111,7 +111,7 @@ fn setup(
         SpriteBundle {
             texture: asset_server.load("player/reticle.png"),
             transform: Transform::from_translation(
-                ball_pos + Vec3::new(0., RECTICLE_SIZE, 0.),
+                ball_pos + Vec3::new(0., RECTICLE_SIZE, 1.),
             ),
             ..default()
         },
