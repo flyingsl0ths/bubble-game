@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 
+mod bubbles;
 mod consts;
 mod player;
 
@@ -23,6 +24,7 @@ fn main() {
         }))
         .init_resource::<player::MousePosition>()
         .add_plugins(player::PlayerSystems)
+        .add_plugins(bubbles::BubbleSystems)
         .add_systems(Startup, setup)
         .run();
 }
