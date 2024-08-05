@@ -76,32 +76,7 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let mut bubble_size = rand::thread_rng();
-
-    let mut spawn_ball = |commands: &mut Commands,
-                          meshes: &mut ResMut<Assets<Mesh>>,
-                          materials: &mut ResMut<Assets<ColorMaterial>>,
-                          x: f32,
-                          y: f32| {
-        let ball = Ball {
-            radius: consts::BUBBLE_SIZE,
-            color: bubble_size.gen_range(0u8..TOTAL_BUBBLE_COLORS).into(),
-        };
-
-        let circle = Mesh2dHandle(meshes.add(Circle {
-            radius: ball.radius,
-        }));
-
-        commands.spawn((
-            MaterialMesh2dBundle {
-                mesh: circle,
-                material: materials.add(Into::<Color>::into(ball.color)),
-                transform: Transform::from_xyz(x, y, 0.),
-                ..default()
-            },
-            ball,
-        ));
-    };
+    let mut rnd = rand::thread_rng();
 
     const HALF_WINDOW_WIDTH: f32 = consts::WINDOW_SIZE.0 / 2.;
 
@@ -109,16 +84,50 @@ fn setup(
 
     let start_x = -(HALF_WINDOW_WIDTH - consts::BUBBLE_SIZE) as f32;
     let start_y = 0. - consts::BUBBLE_SIZE;
-    let mut bubble_padding = rand::thread_rng();
 
     for sy in 0..6 as u32 {
-        let padding: f32 = bubble_padding.gen_range(1u8..=20u8).into();
+        let padding: f32 = rnd.gen_range(1u8..=20u8).into();
         for sx in 0..TOTAL_BUBBLES as i32 {
             let x = start_x + (sx as f32 * consts::BUBBLE_SIZE * 2.) + padding;
 
             let y = start_y + (sy as f32) * consts::BUBBLE_SIZE * 2.;
 
-            spawn_ball(&mut commands, &mut meshes, &mut materials, x, y);
+            spawn_ball(
+                &mut commands,
+                &mut meshes,
+                &mut materials,
+                &mut rnd,
+                x,
+                y,
+            );
         }
     }
+}
+
+fn spawn_ball(
+    commands: &mut Commands,
+    meshes: &mut ResMut<Assets<Mesh>>,
+    materials: &mut ResMut<Assets<ColorMaterial>>,
+    bubble_size: &mut rand::rngs::ThreadRng,
+    x: f32,
+    y: f32,
+) {
+    let ball = Ball {
+        radius: consts::BUBBLE_SIZE,
+        color: bubble_size.gen_range(0u8..TOTAL_BUBBLE_COLORS).into(),
+    };
+
+    let circle = Mesh2dHandle(meshes.add(Circle {
+        radius: ball.radius,
+    }));
+
+    commands.spawn((
+        MaterialMesh2dBundle {
+            mesh: circle,
+            material: materials.add(Into::<Color>::into(ball.color)),
+            transform: Transform::from_xyz(x, y, 0.),
+            ..default()
+        },
+        ball,
+    ));
 }
