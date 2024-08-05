@@ -23,9 +23,9 @@ fn main() {
             ..Default::default()
         }))
         .init_resource::<player::MousePosition>()
-        .add_plugins(player::PlayerSystems)
-        .add_plugins(bubbles::BubbleSystems)
         .add_systems(Startup, setup)
+        .add_plugins(bubbles::BubbleSystems)
+        .add_plugins(player::PlayerSystems)
         .run();
 }
 

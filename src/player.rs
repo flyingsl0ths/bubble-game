@@ -4,10 +4,8 @@ use bevy::{
     window::PrimaryWindow,
 };
 
-use rand::{self, Rng};
-
-use crate::consts;
 use crate::MainCamera;
+use crate::{bubbles, consts};
 
 pub struct PlayerSystems;
 
@@ -17,52 +15,10 @@ struct Recticle;
 #[derive(Component, Resource, Default)]
 pub struct MousePosition(Vec2);
 
-#[derive(Component)]
-pub struct Ball {
-    pub radius: f32,
-    pub color: BallColors,
-}
-
-#[derive(Clone, Copy)]
-pub enum BallColors {
-    Red(f32, f32, f32),
-    Green(f32, f32, f32),
-    Blue(f32, f32, f32),
-}
-
 impl Plugin for PlayerSystems {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup)
             .add_systems(Update, (get_mouse_position, draw_reticle));
-    }
-}
-
-impl Into<BallColors> for u8 {
-    fn into(self) -> BallColors {
-        match self {
-            0 => BallColors::Red(1.0, 0.0, 0.0),
-            1 => BallColors::Green(0.0, 1.0, 0.0),
-            _ => BallColors::Blue(0.0, 0.0, 1.0),
-        }
-    }
-}
-
-impl Into<Color> for BallColors {
-    fn into(self) -> Color {
-        match self {
-            BallColors::Red(r, g, b) => Color::srgb(r, g, b),
-            BallColors::Green(r, g, b) => Color::srgb(r, g, b),
-            BallColors::Blue(r, g, b) => Color::srgb(r, g, b),
-        }
-    }
-}
-
-pub fn new_ball(radius: f32) -> Ball {
-    let mut random = rand::thread_rng();
-
-    Ball {
-        radius,
-        color: random.gen_range(0u8..=2u8).into(),
     }
 }
 
@@ -73,7 +29,7 @@ fn setup(
     asset_server: Res<AssetServer>,
 ) {
     let bag_size: f32 = 50. * 2.;
-    let ball = new_ball(consts::BUBBLE_SIZE);
+    let ball = bubbles::new_ball(consts::BUBBLE_SIZE);
 
     let rect = Mesh2dHandle(meshes.add(Rectangle::new(bag_size, bag_size)));
     let circle = Mesh2dHandle(meshes.add(Circle {
