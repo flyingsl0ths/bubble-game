@@ -18,7 +18,7 @@ pub struct MousePosition(Vec2);
 impl Plugin for PlayerSystems {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup)
-            .add_systems(Update, (get_mouse_position, draw_reticle));
+            .add_systems(Update, (get_mouse_position, update_reticle_pos));
     }
 }
 
@@ -94,7 +94,7 @@ fn get_mouse_position(
     }
 }
 
-fn draw_reticle(
+fn update_reticle_pos(
     coordinates: ResMut<MousePosition>,
     mut recticle: Query<&mut Transform, With<Recticle>>,
 ) {
