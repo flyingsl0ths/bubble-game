@@ -20,12 +20,13 @@ fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let shape = meshes.add(Circle::new(BUBBLE_RADIUS));
     let (wx, wy) = app_constants::WINDOW_SIZE;
+
+    let shape = meshes.add(Circle::new(BUBBLE_RADIUS));
 
     let top_left = Vec3::new(-wx / 2.0, wy / 2.0 - BUBBLE_DIAMETER, 0.0);
 
-    for r in 1..=GRID_SIZE - 3 {
+    for r in 1..=GRID_SIZE - 4 {
         for c in 1..=GRID_SIZE {
             let color = Color::hsl(360. * r as f32 / c as f32, 0.95, 0.7);
 
