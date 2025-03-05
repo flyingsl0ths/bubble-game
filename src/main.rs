@@ -1,34 +1,38 @@
-use bevy::prelude::*;
-
+mod app_constants;
 mod bubbles;
-mod consts;
-mod player;
+mod state;
 
-#[derive(Component)]
-struct MainCamera;
+use bevy::{prelude::*, window::PresentMode};
+use state::GameState;
 
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "Bobbles".to_string(),
-                resizable: false,
-                resolution: consts::WINDOW_SIZE.into(),
-                enabled_buttons: bevy::window::EnabledButtons {
-                    maximize: false,
-                    ..Default::default()
-                },
+    let mut app = App::new();
+
+    app.add_plugins(DefaultPlugins.set(WindowPlugin {
+        primary_window: Some(Window {
+            title: "Bobbles".into(),
+            name: Some("bobles.app".into()),
+            resolution: app_constants::WINDOW_SIZE.into(),
+            present_mode: PresentMode::AutoVsync,
+            // Tells Wasm to resize the window according to the available canvas
+            fit_canvas_to_parent: true,
+            // Tells Wasm not to override default event handling, like F5, Ctrl+R etc.
+            prevent_default_event_handling: false,
+            enabled_buttons: bevy::window::EnabledButtons {
+                maximize: false,
                 ..Default::default()
-            }),
-            ..Default::default()
-        }))
-        .init_resource::<player::MousePosition>()
-        .add_systems(Startup, setup)
-        .add_plugins(bubbles::BubbleSystems)
-        .add_plugins(player::PlayerSystems)
-        .run();
+            },
+            ..default()
+        }),
+        ..default()
+    }))
+    .insert_resource(GameState::default())
+    .add_plugins(bubbles::BubblesPlugin)
+    .add_systems(Startup, setup);
+
+    app.run();
 }
 
 fn setup(mut commands: Commands) {
-    commands.spawn((Camera2dBundle::default(), MainCamera));
+    commands.spawn(Camera2d);
 }
