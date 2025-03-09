@@ -1,4 +1,11 @@
-use bevy::prelude::*;
+use bevy::{
+    app::{App, Plugin, Update},
+    asset::Assets,
+    color::Color,
+    math::Vec3,
+    prelude::{Circle, Commands, Mesh, Mesh2d, ResMut, Transform},
+    sprite::{ColorMaterial, MeshMaterial2d},
+};
 
 use crate::app_constants;
 
@@ -33,7 +40,7 @@ fn setup(
             let mut pos = top_left
                 + Vec3::new(
                     c as f32 * BUBBLE_DIAMETER,
-                    -r as f32 * BUBBLE_DIAMETER,
+                    -r as f32 * BUBBLE_DIAMETER - 10.0,
                     1.0,
                 );
 

@@ -27,7 +27,7 @@ fn main() {
         ..default()
     }))
     .insert_resource(GameState::default())
-    .add_plugins(bubbles::BubblesPlugin)
+    .add_plugins(bubbles::plugin::BubblesPlugin)
     .add_systems(Startup, setup);
 
     app.run();
