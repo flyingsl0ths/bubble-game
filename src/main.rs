@@ -1,8 +1,15 @@
 mod app_constants;
 mod bubbles;
+mod grid;
 mod state;
 
-use bevy::{prelude::*, window::PresentMode};
+use bevy::{
+    prelude::{
+        App, Camera2d, Commands, DefaultPlugins, PluginGroup, Startup, Window,
+        WindowPlugin, default,
+    },
+    window::PresentMode,
+};
 use state::GameState;
 
 fn main() {
