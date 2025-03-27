@@ -9,4 +9,5 @@ pub enum GameState {
     PauseMenu,
     #[default]
     InGame,
+    GameOver,
 }
