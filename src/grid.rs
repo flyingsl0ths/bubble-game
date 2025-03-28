@@ -1,21 +1,40 @@
 use core::ops::{Index, IndexMut};
 
+macro_rules! check_usable {
+    ($self:expr) => {
+        if !$self.usable {
+            return None;
+        }
+    };
+}
+
 pub struct Grid<T, const N: usize> {
-    values: [T; N],
+    values: Vec<T>,
     columns: usize,
+    usable: bool,
 }
 
 impl<T, const N: usize> Grid<T, N> {
     pub fn get(&self, row: usize, column: usize) -> Option<&T> {
+        check_usable!(self);
+
         self.values.get(row * self.columns + column).or(None)
     }
 
     pub fn get_mut(&mut self, row: usize, column: usize) -> Option<&mut T> {
+        check_usable!(self);
+
         self.values.get_mut(row * self.columns + column).or(None)
     }
 
-    pub fn new(values: [T; N]) -> Self {
-        Self { values, columns: N }
+    pub fn new(values: Vec<T>) -> Self {
+        let usable = values.len() % N == 0;
+
+        Self {
+            values,
+            columns: N,
+            usable,
+        }
     }
 }
 
