@@ -1,5 +1,4 @@
 use core::ops::{Index, IndexMut};
-use std::ops::{Deref, DerefMut};
 
 pub struct Grid<T, const N: usize> {
     values: [T; N],
@@ -17,20 +16,6 @@ impl<T, const N: usize> Grid<T, N> {
 
     pub fn new(values: [T; N]) -> Self {
         Self { values, columns: N }
-    }
-}
-
-impl<T, const N: usize> Deref for Grid<T, N> {
-    type Target = [T; N];
-
-    fn deref(&self) -> &Self::Target {
-        &self.values
-    }
-}
-
-impl<T, const N: usize> DerefMut for Grid<T, N> {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.values
     }
 }
 
