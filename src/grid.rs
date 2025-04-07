@@ -1,5 +1,7 @@
 use core::ops::{Index, IndexMut};
 
+use bevy::prelude::Resource;
+
 macro_rules! check_usable {
     ($self:expr) => {
         if !$self.usable {
@@ -8,6 +10,7 @@ macro_rules! check_usable {
     };
 }
 
+#[derive(Resource)]
 pub struct Grid<T, const N: usize> {
     values: Vec<T>,
     columns: usize,
@@ -35,6 +38,10 @@ impl<T, const N: usize> Grid<T, N> {
             columns: N,
             usable,
         }
+    }
+
+    pub fn len(&self) -> usize {
+        self.values.len()
     }
 }
 

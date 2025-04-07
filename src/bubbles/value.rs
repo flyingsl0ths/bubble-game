@@ -5,5 +5,11 @@ pub struct Bubble {
     pub column: usize,
     pub pos: Vec3,
     pub radius: f32,
-    pub edges: [usize; 6],
+    pub edges: [(usize, usize); 6],
+}
+
+impl Bubble {
+    pub fn rc_sum(&self) -> usize {
+        self.row + self.column
+    }
 }

@@ -2,12 +2,12 @@ use bevy::prelude::*;
 use std::collections::HashMap;
 
 #[derive(Resource)]
-pub struct Colors {
+pub struct ColorMap {
     bubble_colors: HashMap<usize, Handle<ColorMaterial>>,
     blank_color: Handle<ColorMaterial>,
 }
 
-impl Colors {
+impl ColorMap {
     pub fn new(blank_color: Handle<ColorMaterial>) -> Self {
         Self {
             bubble_colors: HashMap::new(),
