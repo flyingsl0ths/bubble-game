@@ -7,7 +7,10 @@ use bevy::{
     sprite::{ColorMaterial, MeshMaterial2d},
 };
 
-use crate::{app_constants, grid};
+use crate::{
+    app_constants,
+    utils::{flat_array::FlatArray, grid::Grid},
+};
 
 use super::{colors, value::Bubble};
 
@@ -87,7 +90,7 @@ fn setup(
     }
 
     last_row += 1;
-    for r in 0..3 {
+    for r in 0..2 {
         let r_ = last_row + r;
         for c in 1..=GRID_SIZE {
             let mut pos = top_left
@@ -117,14 +120,14 @@ fn setup(
         }
     }
 
-    let mut grid: grid::Grid<Bubble, GRID_SIZE_U> = grid::Grid::new(grid_items);
+    let mut grid: FlatArray<Bubble, GRID_SIZE_U> = FlatArray::new(grid_items);
     add_edges(&mut grid);
 
     commands.insert_resource(grid);
     commands.insert_resource(color_map);
 }
 
-fn add_edges(grid: &mut grid::Grid<Bubble, GRID_SIZE_U>) {
+fn add_edges(grid: &mut FlatArray<Bubble, GRID_SIZE_U>) {
     // The edges are the neighbors of the bubble
     // and are always present and in the following order
     const DOWN: usize = 0;

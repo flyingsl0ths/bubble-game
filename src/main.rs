@@ -1,8 +1,8 @@
 mod app_constants;
 mod bubbles;
-mod grid;
 mod state;
 mod ui;
+mod utils;
 
 use bevy::{
     prelude::{
