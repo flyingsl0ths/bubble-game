@@ -2,12 +2,14 @@ mod app_constants;
 mod bubbles;
 mod grid;
 mod state;
+mod ui;
 
 use bevy::{
     prelude::{
         App, Camera2d, Commands, DefaultPlugins, PluginGroup, Startup, Window,
         WindowPlugin, default,
     },
+    state::app::AppExtStates,
     window::PresentMode,
 };
 use state::GameState;
@@ -34,9 +36,10 @@ fn main() {
         }),
         ..default()
     }))
-    .insert_resource(GameState::default())
-    .add_plugins(bubbles::plugin::BubblesPlugin)
-    .add_systems(Startup, setup);
+    .init_state::<GameState>()
+    .add_systems(Startup, setup)
+    .add_plugins(ui::UIPlugin)
+    .add_plugins(bubbles::plugin::BubblesPlugin);
 
     app.run();
 }
