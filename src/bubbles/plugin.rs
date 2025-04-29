@@ -44,44 +44,45 @@ fn setup(
 
     let mut grid_items: Vec<Bubble> = Vec::with_capacity((GRID_SIZE_U - 1) * GRID_SIZE_U);
 
-    for r in 1..=GRID_SIZE - 4 {
-        for c in 1..=GRID_SIZE {
-            let color = Color::hsl(360. * r as f32 / c as f32, 0.95, 0.7);
+    for i in 0..((GRID_SIZE - 4) * GRID_SIZE) {
+        let r = (i / GRID_SIZE) + 1;
+        let c = (i % GRID_SIZE) + 1;
 
-            let mut pos = top_left
-                + Vec3::new(
-                    c as f32 * BUBBLE_DIAMETER - 10.0,
-                    -r as f32 * BUBBLE_DIAMETER - 10.0,
-                    1.0,
-                );
+        let color = Color::hsl(360. * r as f32 / c as f32, 0.95, 0.7);
 
-            if r % 2 == 0 {
-                pos.x += BUBBLE_RADIUS;
-            }
+        let mut pos = top_left
+            + Vec3::new(
+                c as f32 * BUBBLE_DIAMETER - 10.0,
+                -r as f32 * BUBBLE_DIAMETER - 10.0,
+                1.0,
+            );
 
-            let color = materials.add(color);
-
-            color_map.insert((r + c) as usize, color.clone());
-
-            grid_items.push(Bubble {
-                row: r as usize,
-                column: c as usize,
-                pos,
-                radius: BUBBLE_RADIUS,
-                edges: [(0, 0); 6],
-            });
-
-            commands.spawn((
-                Mesh2d(shape.clone()),
-                MeshMaterial2d(color.clone_weak()),
-                Transform::from_translation(pos),
-            ));
+        if r % 2 == 0 {
+            pos.x += BUBBLE_RADIUS;
         }
+
+        let color = materials.add(color);
+
+        color_map.insert((r + c) as usize, color.clone());
+
+        grid_items.push(Bubble {
+            row: r as usize,
+            column: c as usize,
+            pos,
+            radius: BUBBLE_RADIUS,
+            edges: [(0, 0); 6],
+        });
+
+        commands.spawn((
+            Mesh2d(shape.clone()),
+            MeshMaterial2d(color.clone_weak()),
+            Transform::from_translation(pos),
+        ));
     }
 
     let last_row = GRID_SIZE - 4;
 
-    for r in 1..=3 {
+    for r in 0..2 {
         let r_ = last_row + r;
         for c in 1..=GRID_SIZE {
             let mut pos = top_left
@@ -137,41 +138,59 @@ fn add_edges(grid: &mut grid::Grid<Bubble, GRID_SIZE_U>) {
 
     const GRID_SIZE_: usize = GRID_SIZE_U - 1;
 
-    for r in 0..GRID_SIZE_U {
-        for c in 0..GRID_SIZE_U {
-            let bubble = &mut grid[(r, c)];
+    // In general a bubble can have up to 6 edges
+    //
+    // Anything starting/ending between the top and last row can have 4 edges
+    // ASSUMMING THERE IS AT LEAST ONE BUBBLE ABOVE AND BELOW IT AND 2 BUBBLES
+    // TO THE LEFT AND RIGHT
+    // -       -
+    // -o-   -o-
+    // -       -
+    //
+    // The top row's bubbles can either have one of two patterns
+    // -o-   -o-
+    // --     --
+    //
+    // The last row's bubbles can either have one of two patterns
+    // --     --
+    // -o-    -o-
+    let total = grid.len();
+    for i in 0..total {
+        let r = i / GRID_SIZE_U;
+        let c = r % GRID_SIZE_U;
 
-            if r < GRID_SIZE_ {
-                bubble.edges[DOWN] = (r + 1, c);
+        let bubble = &mut grid[(r, c)];
+
+        if r < GRID_SIZE_ {
+            bubble.edges[DOWN] = (r + 1, c);
+        }
+
+        if r > 0 {
+            bubble.edges[UP] = (r - 1, c);
+        }
+
+        if c < GRID_SIZE_ {
+            bubble.edges[RIGHT] = (r, c + 1);
+        }
+
+        if c > 0 {
+            bubble.edges[LEFT] = (r, c - 1);
+        }
+
+        if r % 2 == 0 {
+            if r < GRID_SIZE_ && c > 0 {
+                bubble.edges[BOTTOM_LEFT] = (r + 1, c - 1);
+            }
+            if r > 0 && c > 0 {
+                bubble.edges[TOP_LEFT] = (r - 1, c - 1);
+            }
+        } else {
+            if r < GRID_SIZE_ && c < GRID_SIZE_ {
+                bubble.edges[BOTTOM_RIGHT] = (r + 1, c + 1);
             }
 
-            if r > 0 {
-                bubble.edges[UP] = (r - 1, c);
-            }
-
-            if c < GRID_SIZE_ {
-                bubble.edges[RIGHT] = (r, c + 1);
-            }
-
-            if c > 0 {
-                bubble.edges[LEFT] = (r, c - 1);
-            }
-
-            if r % 2 == 0 {
-                if r < GRID_SIZE_ && c > 0 {
-                    bubble.edges[BOTTOM_LEFT] = (r + 1, c - 1);
-                }
-                if r > 0 && c > 0 {
-                    bubble.edges[TOP_LEFT] = (r - 1, c - 1);
-                }
-            } else {
-                if r < GRID_SIZE_ && c < GRID_SIZE_ {
-                    bubble.edges[BOTTOM_RIGHT] = (r + 1, c + 1);
-                }
-
-                if r > 0 && c < GRID_SIZE_ {
-                    bubble.edges[TOP_RIGHT] = (r - 1, c + 1);
-                }
+            if r > 0 && c < GRID_SIZE_ {
+                bubble.edges[TOP_RIGHT] = (r - 1, c + 1);
             }
         }
     }
