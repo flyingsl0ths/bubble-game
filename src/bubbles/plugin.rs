@@ -11,7 +11,7 @@ use crate::{app_constants, grid};
 
 use super::{colors, value::Bubble};
 
-const GRID_SIZE: i32 = 15;
+const GRID_SIZE: i32 = 20;
 const GRID_SIZE_U: usize = GRID_SIZE as usize;
 const BUBBLE_RADIUS: f32 = 25.0;
 const BUBBLE_DIAMETER: f32 = BUBBLE_RADIUS * 2.0;
@@ -34,7 +34,11 @@ fn setup(
 
     let shape = meshes.add(Circle::new(BUBBLE_RADIUS));
 
-    let top_left = Vec3::new(-wx / 2.0, wy / 2.0 - BUBBLE_DIAMETER, 0.0);
+    let top_left = Vec3::new(
+        -wx / 2.0 + BUBBLE_DIAMETER * 2.0,
+        wy / 2.0 - BUBBLE_DIAMETER,
+        0.0,
+    );
 
     let hollow = Color::hsl(0., 0., 0.68);
 
@@ -44,7 +48,9 @@ fn setup(
 
     let mut grid_items: Vec<Bubble> = Vec::with_capacity((GRID_SIZE_U - 1) * GRID_SIZE_U);
 
-    for i in 0..((GRID_SIZE - 4) * GRID_SIZE) {
+    let mut last_row = GRID_SIZE - 10;
+
+    for i in 0..(last_row * GRID_SIZE) {
         let r = (i / GRID_SIZE) + 1;
         let c = (i % GRID_SIZE) + 1;
 
@@ -54,7 +60,7 @@ fn setup(
             + Vec3::new(
                 c as f32 * BUBBLE_DIAMETER - 10.0,
                 -r as f32 * BUBBLE_DIAMETER - 10.0,
-                1.0,
+                0.0,
             );
 
         if r % 2 == 0 {
@@ -80,9 +86,8 @@ fn setup(
         ));
     }
 
-    let last_row = GRID_SIZE - 4;
-
-    for r in 0..2 {
+    last_row += 1;
+    for r in 0..3 {
         let r_ = last_row + r;
         for c in 1..=GRID_SIZE {
             let mut pos = top_left
