@@ -21,19 +21,14 @@ impl Grid {
     }
 
     pub fn values_for(&self, position: Vec2) -> Option<&Vec<usize>> {
-        let (t, ts) = &self.top;
-        let (l, ls) = &self.left;
-        let (r, rs) = &self.right;
-        let (b, bs) = &self.bottom;
-
-        if t.contains(position) {
-            Some(ts)
-        } else if l.contains(position) {
-            Some(ls)
-        } else if r.contains(position) {
-            Some(rs)
-        } else if b.contains(position) {
-            Some(bs)
+        if self.top.0.contains(position) {
+            Some(&self.top.1)
+        } else if self.left.0.contains(position) {
+            Some(&self.left.1)
+        } else if self.right.0.contains(position) {
+            Some(&self.right.1)
+        } else if self.bottom.0.contains(position) {
+            Some(&self.bottom.1)
         } else {
             None
         }
