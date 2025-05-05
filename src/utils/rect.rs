@@ -9,6 +9,15 @@ pub struct Rect2D {
 }
 
 impl Rect2D {
+    pub fn new(xy: Vec2, width: f32, height: f32) -> Self {
+        Self {
+            x: xy.x,
+            y: xy.y,
+            width,
+            height,
+        }
+    }
+
     pub fn contains(&self, point: Vec2) -> bool {
         point.x >= self.x
             && point.x <= self.x + self.width

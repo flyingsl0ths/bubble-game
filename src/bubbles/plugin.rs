@@ -2,14 +2,14 @@ use bevy::{
     app::{App, Plugin, Update},
     asset::Assets,
     color::Color,
-    math::Vec3,
+    math::{Vec2, Vec3},
     prelude::{Circle, Commands, Mesh, Mesh2d, ResMut, Transform},
     sprite::{ColorMaterial, MeshMaterial2d},
 };
 
 use crate::{
     app_constants,
-    utils::{flat_array::FlatArray, grid::Grid},
+    utils::{flat_array::FlatArray, grid::Grid, rect},
 };
 
 use super::{colors, value::Bubble};
@@ -43,13 +43,15 @@ fn setup(
         0.0,
     );
 
+    let mut grid = mk_grid(top_left, BUBBLE_DIAMETER * (GRID_SIZE_U as f32) / 2.0);
+
     let hollow = Color::hsl(0., 0., 0.68);
 
     let hollow_mat = materials.add(hollow);
 
     let mut color_map = colors::ColorMap::new(hollow_mat.clone());
 
-    let mut grid_items: Vec<Bubble> = Vec::with_capacity((GRID_SIZE_U - 1) * GRID_SIZE_U);
+    let mut bubbles: Vec<Bubble> = Vec::with_capacity((GRID_SIZE_U - 1) * GRID_SIZE_U);
 
     let mut last_row = GRID_SIZE - 10;
 
@@ -74,13 +76,15 @@ fn setup(
 
         color_map.insert((r + c) as usize, color.clone());
 
-        grid_items.push(Bubble {
+        bubbles.push(Bubble {
             row: r as usize,
             column: c as usize,
             pos,
             radius: BUBBLE_RADIUS,
             edges: [(0, 0); 6],
         });
+
+        grid.place_in(pos.truncate(), i as usize);
 
         commands.spawn((
             Mesh2d(shape.clone()),
@@ -104,7 +108,7 @@ fn setup(
                 pos.x += BUBBLE_RADIUS;
             }
 
-            grid_items.push(Bubble {
+            bubbles.push(Bubble {
                 row: r_ as usize,
                 column: c as usize,
                 pos,
@@ -120,11 +124,47 @@ fn setup(
         }
     }
 
-    let mut grid: FlatArray<Bubble, GRID_SIZE_U> = FlatArray::new(grid_items);
-    add_edges(&mut grid);
+    let mut bubble_grid: FlatArray<Bubble, GRID_SIZE_U> = FlatArray::new(bubbles);
+    add_edges(&mut bubble_grid);
 
+    commands.insert_resource(bubble_grid);
     commands.insert_resource(grid);
     commands.insert_resource(color_map);
+}
+
+fn mk_grid(top_left: Vec3, quadrant_size: f32) -> Grid {
+    let quadrant_size = BUBBLE_DIAMETER * ((GRID_SIZE_U / 2) as f32);
+
+    let left = rect::Rect2D::new(top_left.truncate(), quadrant_size, quadrant_size);
+
+    let right = rect::Rect2D::new(
+        Vec2::new(
+            top_left.x + BUBBLE_DIAMETER * ((GRID_SIZE_U / 2) as f32),
+            top_left.y,
+        ),
+        quadrant_size,
+        quadrant_size,
+    );
+
+    let bottom_left = rect::Rect2D::new(
+        Vec2::new(
+            top_left.x,
+            top_left.y - BUBBLE_DIAMETER * (GRID_SIZE_U as f32),
+        ),
+        quadrant_size,
+        quadrant_size,
+    );
+
+    let bottom_right = rect::Rect2D::new(
+        Vec2::new(
+            top_left.x + BUBBLE_DIAMETER * ((GRID_SIZE_U / 2) as f32),
+            top_left.y - BUBBLE_DIAMETER * (GRID_SIZE_U as f32),
+        ),
+        quadrant_size,
+        quadrant_size,
+    );
+
+    Grid::new([left, right, bottom_left, bottom_right])
 }
 
 fn add_edges(grid: &mut FlatArray<Bubble, GRID_SIZE_U>) {
