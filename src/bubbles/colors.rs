@@ -1,29 +1,47 @@
 use bevy::prelude::*;
-use std::collections::HashMap;
+
+#[derive(Copy, Clone, Eq, PartialEq)]
+#[repr(u8)]
+pub enum BubbleColors {
+    Red,
+    Green,
+    Blue,
+    Yellow,
+    Purple,
+    Orange,
+    Blank,
+}
+
+impl BubbleColors {
+    pub const fn from_u8(value: u8) -> Self {
+        match value {
+            0 => BubbleColors::Red,
+            1 => BubbleColors::Green,
+            2 => BubbleColors::Blue,
+            3 => BubbleColors::Yellow,
+            4 => BubbleColors::Purple,
+            5 => BubbleColors::Orange,
+            _ => BubbleColors::Blank,
+        }
+    }
+}
 
 #[derive(Resource)]
 pub struct ColorMap {
-    bubble_colors: HashMap<usize, Handle<ColorMaterial>>,
+    #[allow(dead_code)]
+    bubble_colors: [Handle<ColorMaterial>; 6],
+    #[allow(dead_code)]
     blank_color: Handle<ColorMaterial>,
 }
 
 impl ColorMap {
-    pub fn new(blank_color: Handle<ColorMaterial>) -> Self {
+    pub fn new(
+        bubble_colors: [Handle<ColorMaterial>; 6],
+        blank_color: Handle<ColorMaterial>,
+    ) -> Self {
         Self {
-            bubble_colors: HashMap::new(),
+            bubble_colors,
             blank_color,
         }
-    }
-
-    pub fn insert(&mut self, row_column: usize, color: Handle<ColorMaterial>) {
-        self.bubble_colors.insert(row_column, color);
-    }
-
-    pub fn get(&self, row_column: usize) -> Option<Handle<ColorMaterial>> {
-        self.bubble_colors.get(&row_column).map(|h| h.clone_weak())
-    }
-
-    pub fn get_blank(&self) -> Handle<ColorMaterial> {
-        self.blank_color.clone_weak()
     }
 }
